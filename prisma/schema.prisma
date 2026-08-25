@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Business {
+  id          Int           @id @default(autoincrement())
+  name        String
+  address1    String
+  address2    String?
+  city        String
+  region      String
+  postalCode  String
+  country     String        @default("US")
+  phone       String
+  website     String
+  category    String
+  description String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  citations   Citation[]
+  auditIssues AuditIssue[]
+}
+
+model Directory {
+  id             Int        @id @default(autoincrement())
+  name           String     @unique
+  slug           String     @unique
+  homeUrl        String
+  submissionUrl  String
+  searchUrl      String
+  tier           Int        @default(2)
+  industry       String?
+  automationMode String     @default("ASSISTED")
+  citations      Citation[]
+  auditIssues    AuditIssue[]
+  createdAt      DateTime   @default(now())
+}
+
+model Citation {
+  id              Int        @id @default(autoincrement())
+  businessId      Int
+  directoryId     Int
+  status          String     @default("NOT_STARTED")
+  listingUrl      String?
+  observedName    String?
+  observedAddress String?
+  observedPhone   String?
+  notes           String?
+  lastCheckedAt   DateTime?
+  submittedAt     DateTime?
+  updatedAt       DateTime   @updatedAt
+  business        Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  directory       Directory  @relation(fields: [directoryId], references: [id], onDelete: Cascade)
+  auditIssues     AuditIssue[]
+
+  @@unique([businessId, directoryId])
+}
+
+model AuditIssue {
+  id            Int       @id @default(autoincrement())
+  businessId    Int
+  directoryId   Int
+  citationId    Int?
+  field         String
+  expectedValue String
+  observedValue String
+  severity      String    @default("MEDIUM")
+  status        String    @default("OPEN")
+  fixedAt       DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  business      Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  directory     Directory @relation(fields: [directoryId], references: [id], onDelete: Cascade)
+  citation      Citation? @relation(fields: [citationId], references: [id], onDelete: SetNull)
+}

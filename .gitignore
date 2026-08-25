@@ -1,0 +1,28 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+
+# local databases and browser artifacts
+/prisma/*.db
+/prisma/*.db-journal
+/test-results/
+/playwright-report/
+/artifacts/
+/.upstream/
+
+# environment
+.env
+.env.local
+.env.*.local
+
+# tooling
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+npm-debug.log*
+pnpm-debug.log*
